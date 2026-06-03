@@ -1,0 +1,85 @@
+import type { UserProfile } from "@/types/auth";
+
+export const mockUser: UserProfile = {
+  id: "usr_admin",
+  name: "Administrator",
+  username: "admin",
+  displayName: "Administrator",
+  email: "admin@example.com",
+  role: "Administrator",
+  permissions: ["*"],
+  avatar: "NA",
+};
+
+export const serverRows = [
+  {
+    id: "srv-8f3a1b2c",
+    name: "hk-edge-01",
+    status: "online",
+    ip: "203.0.113.12",
+    region: "香港 HK",
+    flag: "🇭🇰",
+    tags: ["edge", "proxy"],
+    expiresAt: "2025-07-18T23:59:59Z",
+  },
+  {
+    id: "srv-4c7d9e1f",
+    name: "sg-app-02",
+    status: "online",
+    ip: "203.0.113.45",
+    region: "新加坡 SG",
+    flag: "🇸🇬",
+    tags: ["production"],
+    expiresAt: "2025-08-22T23:59:59Z",
+  },
+  {
+    id: "srv-3b2e6a9d",
+    name: "la-db-01",
+    status: "warning",
+    ip: "198.51.100.23",
+    region: "洛杉矶 LA",
+    flag: "🇺🇸",
+    tags: ["db", "production"],
+    expiresAt: "2025-06-30T23:59:59Z",
+  },
+  {
+    id: "srv-6e1f2b7c",
+    name: "jp-web-03",
+    status: "online",
+    ip: "203.0.113.78",
+    region: "东京 JP",
+    flag: "🇯🇵",
+    tags: ["web"],
+    expiresAt: "2025-09-12T23:59:59Z",
+  },
+  {
+    id: "srv-9a7d5c3b",
+    name: "nas-01",
+    status: "offline",
+    ip: "192.0.2.50",
+    region: "深圳 CN",
+    flag: "🇨🇳",
+    tags: ["nas"],
+    expiresAt: "2025-05-25T23:59:59Z",
+  },
+  {
+    id: "srv-1d8a6f4e",
+    name: "hk-proxy-02",
+    status: "online",
+    ip: "203.0.113.99",
+    region: "香港 HK",
+    flag: "🇭🇰",
+    tags: ["proxy", "production"],
+    expiresAt: "2025-08-05T23:59:59Z",
+  },
+];
+
+export const dashboardTrend = [
+  { day: "05-06", cpu: 40, memory: 26, disk: 14 },
+  { day: "05-07", cpu: 51, memory: 30, disk: 15 },
+  { day: "05-08", cpu: 46, memory: 31, disk: 16 },
+  { day: "05-09", cpu: 55, memory: 30, disk: 15 },
+  { day: "05-10", cpu: 67, memory: 31, disk: 16 },
+  { day: "05-11", cpu: 51, memory: 31, disk: 15 },
+  { day: "05-12", cpu: 55, memory: 30, disk: 15 },
+];
