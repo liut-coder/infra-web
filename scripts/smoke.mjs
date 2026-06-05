@@ -121,6 +121,12 @@ async function runGeneratedArtifactsSmoke(page) {
 async function runResponsiveNavigationSmoke(page) {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${baseUrl}/dashboard`, { waitUntil: "networkidle" });
+  const mobileMainPadding = await page.locator("main").first().evaluate((element) => {
+    return Number.parseFloat(window.getComputedStyle(element).paddingLeft);
+  });
+  if (mobileMainPadding > 24) {
+    throw new Error(`Expected compact mobile main padding, got ${mobileMainPadding}px`);
+  }
   await page.getByRole("button", { name: "打开导航" }).click();
   await page.waitForFunction(() => {
     const aside = document.querySelector("aside");
@@ -139,6 +145,12 @@ async function runResponsiveNavigationSmoke(page) {
 
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto(`${baseUrl}/dashboard`, { waitUntil: "networkidle" });
+  const desktopMainPadding = await page.locator("main").first().evaluate((element) => {
+    return Number.parseFloat(window.getComputedStyle(element).paddingLeft);
+  });
+  if (desktopMainPadding < 30) {
+    throw new Error(`Expected full desktop main padding, got ${desktopMainPadding}px`);
+  }
   await page.getByRole("button", { name: "收起侧边栏" }).click();
   await page.waitForFunction(() => {
     const aside = document.querySelector("aside");
