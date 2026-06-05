@@ -118,6 +118,42 @@ async function runGeneratedArtifactsSmoke(page) {
   await page.getByRole("button", { name: /^generate$/ }).waitFor({ timeout: 10000 });
 }
 
+async function runResponsiveNavigationSmoke(page) {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`${baseUrl}/dashboard`, { waitUntil: "networkidle" });
+  await page.getByRole("button", { name: "打开导航" }).click();
+  await page.waitForFunction(() => {
+    const aside = document.querySelector("aside");
+    if (!aside) return false;
+    const rect = aside.getBoundingClientRect();
+    return Math.abs(rect.left) < 2 && rect.width >= 220;
+  });
+  await page.getByRole("link", { name: "服务", exact: true }).click();
+  await page.waitForURL("**/infra/services", { timeout: 10000 });
+  await page.waitForFunction(() => {
+    const aside = document.querySelector("aside");
+    if (!aside) return false;
+    return aside.getBoundingClientRect().left < -200;
+  });
+  await page.getByRole("heading", { name: "服务" }).waitFor({ timeout: 10000 });
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto(`${baseUrl}/dashboard`, { waitUntil: "networkidle" });
+  await page.getByRole("button", { name: "收起侧边栏" }).click();
+  await page.waitForFunction(() => {
+    const aside = document.querySelector("aside");
+    if (!aside) return false;
+    const width = aside.getBoundingClientRect().width;
+    return width > 70 && width < 90;
+  });
+  await page.getByRole("button", { name: "展开侧边栏" }).click();
+  await page.waitForFunction(() => {
+    const aside = document.querySelector("aside");
+    if (!aside) return false;
+    return aside.getBoundingClientRect().width >= 220;
+  });
+}
+
 const browser = await chromium.launch({
   headless: true,
   args: ["--no-sandbox"],
@@ -145,6 +181,7 @@ try {
     }
   }
 
+  await runResponsiveNavigationSmoke(page);
   await runInventorySaveSmoke(page);
   await runGeneratedArtifactsSmoke(page);
   await runHighRiskActionSmoke(page);

@@ -5,9 +5,13 @@ type Theme = "light" | "dark";
 interface UiState {
   theme: Theme;
   sidebarCollapsed: boolean;
+  mobileSidebarOpen: boolean;
   setTheme: (theme: Theme) => void;
   toggleTheme: () => void;
+  setSidebarCollapsed: (collapsed: boolean) => void;
   toggleSidebar: () => void;
+  openMobileSidebar: () => void;
+  closeMobileSidebar: () => void;
 }
 
 function initialTheme(): Theme {
@@ -23,6 +27,7 @@ function applyTheme(theme: Theme) {
 export const useUiStore = create<UiState>((set, get) => ({
   theme: initialTheme(),
   sidebarCollapsed: false,
+  mobileSidebarOpen: false,
   setTheme: (theme) => {
     applyTheme(theme);
     set({ theme });
@@ -32,8 +37,11 @@ export const useUiStore = create<UiState>((set, get) => ({
     applyTheme(next);
     set({ theme: next });
   },
+  setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
   toggleSidebar: () =>
     set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+  openMobileSidebar: () => set({ mobileSidebarOpen: true }),
+  closeMobileSidebar: () => set({ mobileSidebarOpen: false }),
 }));
 
 export function initTheme() {

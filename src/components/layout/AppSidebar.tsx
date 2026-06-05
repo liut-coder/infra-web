@@ -1,5 +1,7 @@
 import {
   CalendarClock,
+  ChevronLeft,
+  ChevronRight,
   ClipboardList,
   FileText,
   Folder,
@@ -17,10 +19,12 @@ import {
   Table2,
   Terminal,
   Users,
+  X,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { appConfig } from "@/config/app";
 import { cn } from "@/lib/cn";
+import { useUiStore } from "@/store/ui";
 
 const groups = [
   {
@@ -66,45 +70,123 @@ const groups = [
 ];
 
 export function AppSidebar() {
+  const sidebarCollapsed = useUiStore((state) => state.sidebarCollapsed);
+  const mobileSidebarOpen = useUiStore((state) => state.mobileSidebarOpen);
+  const toggleSidebar = useUiStore((state) => state.toggleSidebar);
+  const closeMobileSidebar = useUiStore((state) => state.closeMobileSidebar);
+
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 w-[232px] border-r border-white/70 bg-white/72 shadow-[12px_0_40px_rgba(15,23,42,0.06)] backdrop-blur-2xl">
-      <div className="flex h-[64px] items-center border-b border-white/70 px-6">
-        <img
-          src={appConfig.logoHorizontal}
-          alt={appConfig.name}
-          className="h-8 w-auto"
-        />
-      </div>
-      <nav className="flex h-[calc(100vh-64px)] flex-col gap-6 overflow-y-auto px-4 py-5">
-        {groups.map((group) => (
-          <div key={group.label}>
-            <div className="mb-3 px-2 text-xs font-medium text-muted-foreground">
-              {group.label}
+    <>
+      <button
+        type="button"
+        aria-label="关闭导航遮罩"
+        onClick={closeMobileSidebar}
+        className={cn(
+          "fixed inset-0 z-40 bg-slate-950/30 backdrop-blur-sm transition-opacity duration-200 lg:hidden",
+          mobileSidebarOpen
+            ? "opacity-100"
+            : "pointer-events-none opacity-0",
+        )}
+      />
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 w-[232px] border-r border-white/70 bg-white/82 shadow-[12px_0_40px_rgba(15,23,42,0.08)] backdrop-blur-2xl transition-all duration-200 ease-out",
+          mobileSidebarOpen ? "translate-x-0" : "-translate-x-full",
+          "lg:translate-x-0",
+          sidebarCollapsed ? "lg:w-[76px]" : "lg:w-[232px]",
+        )}
+      >
+        <div
+          className={cn(
+            "flex h-[64px] items-center justify-between border-b border-white/70 px-5",
+            sidebarCollapsed && "lg:justify-center lg:px-4",
+          )}
+        >
+          <img
+            src={appConfig.logoHorizontal}
+            alt={appConfig.name}
+            className={cn("h-8 w-auto", sidebarCollapsed && "lg:hidden")}
+          />
+          <img
+            src={appConfig.logoMark}
+            alt={appConfig.name}
+            className={cn("hidden h-8 w-8", sidebarCollapsed && "lg:block")}
+          />
+          <button
+            type="button"
+            aria-label="关闭导航"
+            onClick={closeMobileSidebar}
+            className="grid h-9 w-9 place-items-center rounded-md text-slate-500 transition hover:bg-white/70 hover:text-slate-950 lg:hidden"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <nav
+          aria-label="主导航"
+          className={cn(
+            "flex h-[calc(100vh-64px)] flex-col gap-6 overflow-y-auto py-5",
+            sidebarCollapsed ? "px-4 lg:px-3" : "px-4",
+          )}
+        >
+          {groups.map((group) => (
+            <div key={group.label}>
+              <div
+                className={cn(
+                  "mb-3 px-2 text-xs font-medium text-muted-foreground",
+                  sidebarCollapsed && "lg:sr-only lg:mb-0",
+                )}
+              >
+                {group.label}
+              </div>
+              <div className="space-y-1">
+                {group.items.map((item) => (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    title={sidebarCollapsed ? item.label : undefined}
+                    aria-label={sidebarCollapsed ? item.label : undefined}
+                    onClick={closeMobileSidebar}
+                    className={({ isActive }) =>
+                      cn(
+                        "flex h-10 items-center rounded-md border border-transparent text-sm text-slate-500 transition-all duration-200 ease-out hover:border-white/70 hover:bg-white/70 hover:text-slate-950",
+                        sidebarCollapsed
+                          ? "gap-3 px-3 lg:justify-center lg:gap-0 lg:px-0"
+                          : "gap-3 px-3",
+                        isActive &&
+                          "border-blue-100 bg-white/90 text-slate-950 shadow-sm hover:bg-white hover:text-slate-950",
+                      )
+                    }
+                  >
+                    <item.icon className="h-4 w-4 shrink-0" />
+                    <span className={cn(sidebarCollapsed && "lg:sr-only")}>
+                      {item.label}
+                    </span>
+                  </NavLink>
+                ))}
+              </div>
             </div>
-            <div className="space-y-1">
-              {group.items.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  className={({ isActive }) =>
-                    cn(
-                      "flex h-10 items-center gap-3 rounded-md border border-transparent px-3 text-sm text-slate-500 transition-all duration-200 ease-out hover:border-white/70 hover:bg-white/70 hover:text-slate-950",
-                      isActive &&
-                        "border-blue-100 bg-white/90 text-slate-950 shadow-sm hover:bg-white hover:text-slate-950",
-                    )
-                  }
-                >
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.label}</span>
-                </NavLink>
-              ))}
-            </div>
-          </div>
-        ))}
-        <button className="mt-auto flex h-10 items-center gap-3 rounded-md px-3 text-sm text-slate-500 transition hover:bg-white/70">
-          收起侧边栏
-        </button>
-      </nav>
-    </aside>
+          ))}
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            aria-label={sidebarCollapsed ? "展开侧边栏" : "收起侧边栏"}
+            title={sidebarCollapsed ? "展开侧边栏" : "收起侧边栏"}
+            className={cn(
+              "mt-auto hidden h-10 items-center rounded-md px-3 text-sm text-slate-500 transition hover:bg-white/70 hover:text-slate-950 lg:flex",
+              sidebarCollapsed ? "justify-center px-0" : "gap-3",
+            )}
+          >
+            {sidebarCollapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+            <span className={cn(sidebarCollapsed && "lg:sr-only")}>
+              {sidebarCollapsed ? "展开侧边栏" : "收起侧边栏"}
+            </span>
+          </button>
+        </nav>
+      </aside>
+    </>
   );
 }
