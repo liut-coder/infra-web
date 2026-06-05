@@ -94,6 +94,7 @@ async function runInventorySaveSmoke(page) {
 }
 
 async function runGeneratedArtifactsSmoke(page) {
+  await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto(`${baseUrl}/infra/generated`, { waitUntil: "networkidle" });
   const body = await page.locator("body").innerText();
   const expectedArtifacts = [
@@ -116,6 +117,18 @@ async function runGeneratedArtifactsSmoke(page) {
   await page.getByRole("button", { name: /Ansible inventory/ }).click();
   await page.getByText("[all]").waitFor({ timeout: 10000 });
   await page.getByRole("button", { name: /^generate$/ }).waitFor({ timeout: 10000 });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`${baseUrl}/dashboard`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}/infra/generated`, { waitUntil: "networkidle" });
+  await page.getByRole("tab", { name: "文件列表", selected: true }).waitFor();
+  await page.getByRole("button", { name: /Ansible inventory/ }).click();
+  await page.getByRole("tab", { name: "预览", selected: true }).waitFor();
+  await page.getByText("[all]").waitFor({ timeout: 10000 });
+  await page.getByRole("tab", { name: "文件列表" }).click();
+  await page.getByRole("tab", { name: "文件列表", selected: true }).waitFor();
+  await page.getByRole("button", { name: /Ansible inventory/ }).waitFor();
+  await page.setViewportSize({ width: 1280, height: 900 });
 }
 
 async function runResponsiveNavigationSmoke(page) {

@@ -24,6 +24,8 @@ import { getGeneratedFile, listGeneratedFiles, listInfraActionCatalog, runInfraA
 import type { InfraAction, InfraCommandAction, InfraCommandResult, InfraGeneratedFileSummary, InfraGeneratedName } from "@/features/infra/types";
 import { cn } from "@/lib/cn";
 
+type MobileGeneratedView = "list" | "preview";
+
 function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -152,6 +154,7 @@ export function InfraGeneratedPage() {
   const [selected, setSelected] = useState<InfraGeneratedName>("network-report");
   const [search, setSearch] = useState("");
   const [kind, setKind] = useState("全部");
+  const [mobileView, setMobileView] = useState<MobileGeneratedView>("list");
   const [pendingProducer, setPendingProducer] = useState<InfraCommandAction | null>(null);
   const queryClient = useQueryClient();
   const listQuery = useQuery({
@@ -266,7 +269,34 @@ export function InfraGeneratedPage() {
       </div>
 
       <div className="mt-5 grid gap-5 xl:grid-cols-[360px_minmax(0,1fr)]">
-        <GlassPanel className="p-3">
+        <div
+          role="tablist"
+          aria-label="生成物视图"
+          className="grid grid-cols-2 rounded-md border border-white/70 bg-white/55 p-1 shadow-sm backdrop-blur xl:hidden"
+        >
+          {[
+            ["list", "文件列表"],
+            ["preview", "预览"],
+          ].map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              role="tab"
+              aria-selected={mobileView === value}
+              onClick={() => setMobileView(value as MobileGeneratedView)}
+              className={cn(
+                "h-9 rounded text-sm transition-all duration-200",
+                mobileView === value
+                  ? "bg-white text-blue-700 shadow-sm"
+                  : "text-slate-500 hover:bg-white/70 hover:text-slate-950",
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <GlassPanel className={cn("p-3", mobileView === "preview" && "hidden xl:block")}>
           <div className="mb-3 px-2 text-xs font-medium text-slate-500">GENERATED</div>
           <div className="mb-3 grid gap-2">
             <div className="relative">
@@ -302,7 +332,10 @@ export function InfraGeneratedPage() {
                 key={item.name}
                 item={item}
                 selected={selected === item.name}
-                onSelect={() => setSelected(item.name)}
+                onSelect={() => {
+                  setSelected(item.name);
+                  setMobileView("preview");
+                }}
               />
             ))}
             {!filteredFiles.length ? (
@@ -319,7 +352,7 @@ export function InfraGeneratedPage() {
           </div>
         </GlassPanel>
 
-        <GlassPanel className="p-5">
+        <GlassPanel className={cn("p-5", mobileView === "list" && "hidden xl:block")}>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2 text-base font-semibold text-slate-950">
